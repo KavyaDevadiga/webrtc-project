@@ -1,0 +1,46 @@
+// {
+//   "compilerOptions": {
+//     "target": "es2016",
+//     "module": "commonjs",
+//     "lib": ["es2020", "dom"],
+//     "emitDecoratorMetadata": true,
+//     "esModuleInterop": true,
+//     "experimentalDecorators": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "moduleResolution": "node",
+//     "resolveJsonModule": true,
+//     "strict": true,
+//     "skipLibCheck": true,
+//     "skipDefaultLibCheck": true,
+//     "baseUrl": "./",
+//     "paths": {
+//       "*": ["*"]
+//     },
+//     "outDir": "dist"
+//   }
+// }
+
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "lib": ["es2020", "dom"],
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": "./", // base directory for resolving non-relative module imports
+    "paths": {
+      "src/*": ["src/*"]
+    },
+    "outDir": "dist" // Output directory for compiled JavaScript files
+  },
+  "include": ["../"],
+  "exclude": ["node_modules"]
+}
