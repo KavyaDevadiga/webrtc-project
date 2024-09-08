@@ -1,9 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "paths": {
-      // Or even cooler
-      "@/*": ["src/*"]
-    }
+    //Pending prod configuration
+    "allowJs": true
   }
 }
