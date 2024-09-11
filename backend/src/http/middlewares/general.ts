@@ -2,7 +2,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 
-export default (app: express.Express): void => {
+const basic = (app: express.Express): void => {
   app.use(express.urlencoded({ extended: true }));
   app.use(cors());
   app.use(helmet());
@@ -14,3 +14,5 @@ export default (app: express.Express): void => {
     })
   );
 };
+
+export default basic;
