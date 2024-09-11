@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "outDir": "./dist",
+    "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "target": "es6",
+    "moduleResolution": "node", // Ensure proper module resolution for Node.js
+    "rootDir": "src",
+    "esModuleInterop": true, // Enables interoperability between CommonJS and ES modules
+    "strict": true, // Enable strict type checking
+    "paths": {
+      "@src/*": ["./*"]
+    },
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}
