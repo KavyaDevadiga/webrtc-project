@@ -1,5 +1,6 @@
-import express, { Request, Response, NextFunction } from "express";
 import apiRoutesV1 from "@src/http/routes/v1/api";
+import { routeItemInterface } from "@src/interfaces";
+import express from "express";
 import expressAsyncHandler from "express-async-handler";
 
 // Define route configuration
@@ -10,17 +11,7 @@ export const routeConfig = {
   },
 };
 
-//To-Do: Move interfaces to separate file
-interface RouteItem {
-  method: "get" | "post" | "put" | "patch" | "delete";
-  path: string;
-  handler: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  middlewares?: Array<
-    (req: Request, res: Response, next: NextFunction) => void
-  >;
-}
-
-function processRoutes(routes: RouteItem[]) {
+function processRoutes(routes: routeItemInterface.RouteItem[]) {
   const router = express.Router();
 
   routes.forEach((routeItem) => {
@@ -28,7 +19,6 @@ function processRoutes(routes: RouteItem[]) {
 
     // Combine route-specific middlewares and async handler for the route
     const allMiddlewares = [...middlewares, expressAsyncHandler(handler)];
-
     switch (method) {
       case "get":
         router.get(path, ...allMiddlewares);

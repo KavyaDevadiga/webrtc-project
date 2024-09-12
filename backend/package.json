@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:prod": "tsc --project tsconfig.prod.json",
-    "start:prod": "ts-node -r tsconfig-paths/register --project tsconfig.prod.json --transpile-only src/index.ts",
-    "start": "ts-node -r tsconfig-paths/register src/index.ts"
+    "start:prod": "ts-node -r tsconfig-paths/register --project tsconfig.prod.json --transpile-only src/server.ts",
+    "start": "ts-node -r tsconfig-paths/register src/server.ts"
   },
   "author": "",
   "license": "ISC",
