@@ -1,4 +1,4 @@
-import userRoutes from "@src/http/routes/v1/users";
+import userRoutes from "@src/http/routes/v1/user.route";
 
 export default [
   //Dummy route imported
