@@ -1,10 +1,12 @@
+import { StatusCodes } from "http-status-codes";
+
 export class BaseError extends Error {
   public statusCode: number;
   public isOperational: boolean;
 
   constructor(
     message: string,
-    statusCode: number,
+    statusCode: number = StatusCodes.INTERNAL_SERVER_ERROR,
     isOperational: boolean = true
   ) {
     super(message);

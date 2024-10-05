@@ -1,5 +1,7 @@
-import * as dotevnv from "dotenv";
+import * as dotenv from "dotenv";
 
-dotevnv.config();
+dotenv.config();
 
-export const PORT = parseInt(process.env.PORT as string, 10);
+export const PORT: number = parseInt(process.env.PORT as string, 10);
+
+export const MONGO_URI: string = process.env.MONGO_URI as string;

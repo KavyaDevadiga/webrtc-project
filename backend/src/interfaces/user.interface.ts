@@ -1,12 +1,13 @@
 export interface User {
   name: string;
-  age: number;
+  email: string;
 }
 
 export interface UnitUser extends User {
-  id: number;
+  entityId: string;
 }
 
+//ToDo: need to find it's purpose
 // export interface Users {
 //   [key: string]: UnitUser;
 // }

@@ -1,10 +1,9 @@
-import { Logger } from "@src/utils";
+import { logger } from "@src/utils";
 import { RequestHandler } from "express";
 import morgan from "morgan";
 export default class MorganLogger {
   public static getMorganMiddleware(): RequestHandler {
     const morganFormat = ":method :url :status :response-time ms";
-    const logger = Logger.getInstance();
     const stream = {
       write: (message: string) => {
         const logObject = {

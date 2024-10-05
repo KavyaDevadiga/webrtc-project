@@ -1,13 +1,6 @@
 import winston from "winston";
 
 // Custom format for console logging with colors
-const consoleLogFormat = winston.format.combine(
-  winston.format.colorize(),
-  winston.format.printf(({ level, message, timestamp }) => {
-    return `${level}: ${message}`;
-  })
-);
-
 export class Logger {
   private static instance: winston.Logger;
 
@@ -23,12 +16,25 @@ export class Logger {
         ),
         transports: [
           new winston.transports.Console({
-            format: consoleLogFormat,
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.printf(({ level, message, timestamp }) => {
+                return `${level}: ${message}`;
+              })
+            ),
           }),
-          new winston.transports.File({ filename: "app.log" }),
+          new winston.transports.File({
+            filename: "app.log",
+            format: winston.format.combine(
+              winston.format.timestamp(),
+              winston.format.json()
+            ),
+          }),
         ],
       });
     }
     return Logger.instance;
   }
 }
+
+export const logger = Logger.getInstance();
