@@ -1,8 +1,17 @@
-import { userInterface } from "@src/interfaces";
-import { UserRepository } from "@src/repository";
-
 // Sample data just used for setup
 
-export const getAllUsers = async (): Promise<userInterface.UnitUser[] | []> => {
-  return await UserRepository.findUsers();
-};
+import { userInterface } from "@src/interfaces";
+
+export class UserService {
+  private userRepository: userInterface.IUserRepository;
+  constructor(userRepository: userInterface.IUserRepository) {
+    this.userRepository = userRepository;
+  }
+  async getUsers() {
+    const users = await this.userRepository.get();
+    return users;
+  }
+  async addUser(user: Partial<userInterface.UnitUser>) {
+    await this.userRepository.add(user);
+  }
+}

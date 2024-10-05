@@ -1,3 +1,1 @@
-import * as userServices from "@src/services/users.services";
-
-export { userServices };
+export { UserService } from "@src/services/users.services";
