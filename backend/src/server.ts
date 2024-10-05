@@ -1,5 +1,5 @@
 import { PORT } from "@src/config/env";
-import connectDB from "@src/database";
+import { MongoConnection } from "@src/database";
 import { initializeHttpServer } from "@src/http";
 import express from "express";
 
@@ -9,14 +9,14 @@ if (!PORT) {
 }
 
 const app = express();
-
-connectDB()
-  .then(() => {
+(async function () {
+  try {
+    const db = await MongoConnection.getInstance();
     initializeHttpServer(app);
     app.listen(PORT, () => {
       console.log(`Server is listening on port ${PORT}`);
     });
-  })
-  .catch((error) => {
+  } catch (error) {
     process.exit(1);
-  });
+  }
+})();
