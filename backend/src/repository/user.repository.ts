@@ -1,11 +1,13 @@
-import { UnitUser } from "@src/interfaces/user.interface";
-import { IUserModel, UserModel } from "@src/models";
+import { userInterface } from "@src/interfaces";
+import { IUserRepository } from "@src/interfaces/user.interface";
+import { UserModel } from "@src/models";
+import { BaseRepository } from "@src/repository/base.repository";
 
-export const createUser = async (userData: UnitUser): Promise<IUserModel> => {
-  const user = new UserModel(userData);
-  return await user.save();
-};
-
-export const findUsers = async (): Promise<IUserModel[] | []> => {
-  return UserModel.find();
-};
+export class UserRepository
+  extends BaseRepository<userInterface.IUserModel>
+  implements IUserRepository
+{
+  constructor() {
+    super(UserModel);
+  }
+}

@@ -1,19 +1,34 @@
 import { successResponse } from "@src/http/responses/api.response";
-import { userServices } from "@src/services";
+import { UserRepository } from "@src/repository";
+import { UserService } from "@src/services";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-// Get all users
-export const getAllUsers = async (
-  request: Request,
-  response: Response,
-  next: NextFunction
-) => {
-  const users = await userServices.getAllUsers();
-  successResponse(
-    response,
-    "Users fetched successfully",
-    users,
-    StatusCodes.OK
-  );
-};
+class UserController {
+  private userService: UserService;
+
+  constructor(userService: UserService) {
+    this.userService = userService;
+  }
+
+  async getAllUsers(
+    request: Request,
+    response: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const users = await this.userService.getUsers();
+      successResponse(
+        response,
+        "Users fetched successfully",
+        users,
+        StatusCodes.OK
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+const userRepository = new UserRepository();
+const userService = new UserService(userRepository);
+export const userController = new UserController(userService);
