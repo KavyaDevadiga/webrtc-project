@@ -1,4 +1,5 @@
 import middlewares from "@src/http/middlewares";
+import { routeConfig } from "@src/http/routes";
 import express from "express";
 
 export const initializeHttpServer = (app: express.Express): void => {
@@ -7,7 +8,7 @@ export const initializeHttpServer = (app: express.Express): void => {
   app.use(middlewares.requestLogger.getMorganMiddleware());
 
   // Register routes
-  //   app.use("/api", userRoutes);
+  app.use(routeConfig.api.prefix, routeConfig.api.routes());
 
   app.use(middlewares.errorHandler);
 };
