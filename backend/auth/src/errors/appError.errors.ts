@@ -1,10 +1,10 @@
 import {
   BadRequestError,
   ForbiddedError,
+  InternalServerError,
   NotFoundError,
   UnAuthorizedError,
 } from "@src/errors";
-import { InternalServerError } from "./internalServerError.errors";
 //factory pattern for error handling
 export class AppError {
   create(type: string, ...args: any[]) {
