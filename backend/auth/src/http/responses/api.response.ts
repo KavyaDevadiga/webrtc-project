@@ -20,7 +20,7 @@ export const successResponse = <T>(
 export const errorResponse = (
   res: Response,
   message: string,
-  error: string,
+  error: Error,
   statusCode: number = StatusCodes.INTERNAL_SERVER_ERROR
 ): Response<apiResponseInterface.ApiResponse<null>> => {
   return res.status(statusCode).json({

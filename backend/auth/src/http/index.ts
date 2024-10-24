@@ -4,7 +4,7 @@ import express from "express";
 
 export const initializeHttpServer = (app: express.Express): void => {
   // Apply middlewares
-  app.use(middlewares.general);
+  middlewares.general(app);
   app.use(middlewares.requestLogger.getMorganMiddleware());
 
   // Register routes
