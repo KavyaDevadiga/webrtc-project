@@ -9,4 +9,5 @@ export class Database {
     return this.instance;
   }
   protected async connect() {}
+  public async closeConnection() {}
 }

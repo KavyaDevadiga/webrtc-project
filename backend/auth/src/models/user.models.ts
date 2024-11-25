@@ -1,14 +1,42 @@
 import { userInterface } from "@src/interfaces";
-import mongoose, { Schema } from "mongoose";
+import { DataTypes, Model, Sequelize } from "sequelize";
+export class User
+  extends Model<
+    userInterface.IUserAttributes,
+    userInterface.IUserCreationAttributes
+  >
+  implements userInterface.IUserAttributes
+{
+  public id!: string;
+  public name!: string;
+  public email!: string;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+}
 
-// Define the schema
-const UserSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-});
-
-// Create the model
-export const UserModel = mongoose.model<userInterface.IUserModel>(
-  "User",
-  UserSchema
-);
+// Initialize the User model
+export const initializeUserModel = (sequelize: Sequelize) => {
+  User.init(
+    {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+    },
+    {
+      sequelize,
+      tableName: "users",
+      timestamps: true,
+    }
+  );
+};

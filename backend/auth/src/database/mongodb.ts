@@ -16,6 +16,17 @@ export class MongoConnection extends Database {
     }
   }
 
+  // MongoConnection Class
+
+  public async closeConnection(): Promise<void> {
+    try {
+      await mongoose.disconnect();
+      logger.info("MongoDB connection closed successfully.");
+    } catch (error) {
+      logger.error("Error while closing MongoDB connection:", error);
+    }
+  }
+
   // Singleton pattern for MongoConnection
   public static getInstance(): Promise<MongoConnection> {
     return super.getConnection() as Promise<MongoConnection>;

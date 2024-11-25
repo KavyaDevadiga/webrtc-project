@@ -1,12 +1,11 @@
 import passport, { Strategy } from "passport";
 
 export class BaseStrategy {
-  private strategy: Strategy;
+  public strategy: Strategy;
   constructor(strategy: Strategy) {
     this.strategy = strategy;
     this.initialize();
   }
-
   private initialize() {
     passport.use(this.strategy);
     passport.serializeUser((user, done) => {
