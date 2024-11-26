@@ -1,5 +1,3 @@
-// Sample data just used for setup
-
 import { userInterface } from "@src/interfaces";
 
 export class UserService {
@@ -7,11 +5,15 @@ export class UserService {
   constructor(userRepository: userInterface.IUserRepository) {
     this.userRepository = userRepository;
   }
-  async getUsers() {
-    const users = await this.userRepository.get();
+  async getUsers(options: userInterface.UserWhereOptionType = {}) {
+    const users = await this.userRepository.get(options);
     return users;
   }
-  async addUser(user: Partial<userInterface.UnitUser>) {
-    await this.userRepository.add(user);
+  async getUserByGoogleId(profileId: string) {
+    const users = await this.userRepository.get({ googleId: profileId });
+    return users.length > 0 ? users[0] : null;
+  }
+  async addUser(user: userInterface.UserCreationOptionalAttributes) {
+    return await this.userRepository.add(user);
   }
 }

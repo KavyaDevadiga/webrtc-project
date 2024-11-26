@@ -10,6 +10,7 @@ export class User
   public id!: string;
   public name!: string;
   public email!: string;
+  public googleId!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -32,10 +33,11 @@ export const initializeUserModel = (sequelize: Sequelize) => {
         allowNull: false,
         unique: true,
       },
+      googleId: { type: DataTypes.STRING, allowNull: false, unique: true },
     },
     {
       sequelize,
-      tableName: "users",
+      modelName: "User",
       timestamps: true,
     }
   );

@@ -3,6 +3,8 @@ import {
   GOOGLE_OAUTH_CLIENT_SECRET,
 } from "@src/config/env";
 import { BaseStrategy } from "@src/http/passportStrategies";
+import { UserRepository } from "@src/repository";
+import { UserService } from "@src/services";
 import { logger } from "@src/utils/logger";
 import { Strategy } from "passport-google-oauth20";
 
@@ -26,20 +28,21 @@ export class GoogleStrategy extends BaseStrategy {
       ) => {
         try {
           // Check if user already exists
-          // let user = await User.findOne({ googleId: profile.id });
+          const userRepository = new UserRepository();
+          const userService = new UserService(userRepository);
+          logger.error("---------------", profile);
+          logger.info("---------------", accessToken);
+          logger.info("---------------", refreshToken);
+
+          // let user = await userService.getUserByGoogleId(profile.id);
           // if (user) {
           //   return done(null, user);
           // }
-          // Create a new user if it doesn't exist
-          // user = await new User({
+          // user = await userService.addUser({
           //   googleId: profile.id,
-          //   username: profile.displayName,
-          //   thumbnail: profile._json.picture,
-          // }).save();
-          console.log("---------------", accessToken);
-          console.log("---------------", refreshToken);
-          console.log("---------------", profile);
-
+          //   name: profile.displayName,
+          //   email: profile.email,
+          // });
           done(null, {
             googleId: profile.id,
             username: profile.displayName,
@@ -48,7 +51,7 @@ export class GoogleStrategy extends BaseStrategy {
             refreshToken,
           });
         } catch (err) {
-          logger.error(err);
+          logger.error("error in google strategy", err);
           done(err, null);
         }
       }

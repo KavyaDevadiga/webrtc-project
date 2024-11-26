@@ -1,13 +1,15 @@
 import { userInterface } from "@src/interfaces";
-import { IUserRepository } from "@src/interfaces/user.interface";
-import { UserModel } from "@src/models";
+import { models } from "@src/models";
 import { BaseRepository } from "@src/repository/base.repository";
 
 export class UserRepository
-  extends BaseRepository<userInterface.IUserModel>
-  implements IUserRepository
+  extends BaseRepository<
+    userInterface.IUserAttributes,
+    userInterface.IUserCreationAttributes
+  >
+  implements userInterface.IUserRepository
 {
   constructor() {
-    super(UserModel);
+    super(models.User);
   }
 }

@@ -1,5 +1,9 @@
 import { Document } from "mongoose";
-import { Optional } from "sequelize";
+import { Model, Optional, WhereOptions } from "sequelize";
+import {
+  MakeNullishOptional,
+  NullishPropertiesOf,
+} from "sequelize/types/utils";
 
 export interface User {
   name: string;
@@ -15,15 +19,18 @@ export interface IUserModel extends Document, UnitUser {
 }
 
 export interface IUserRepository {
-  get(): Promise<IUserModel[] | []>;
-  add(userData: Partial<UnitUser>): Promise<IUserModel>; // Change this to return Promise<IUserModel>
-  // Add other user-specific methods here
+  get(
+    options?: Object
+  ): Promise<Model<IUserAttributes, IUserCreationAttributes>[]>;
+  add(
+    data: MakeNullishOptional<IUserCreationAttributes>
+  ): Promise<Model<IUserAttributes, IUserCreationAttributes>>;
 }
-
 export interface IUserAttributes {
   id: string;
   name: string;
   email: string;
+  googleId: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -31,7 +38,10 @@ export interface IUserAttributes {
 export interface IUserCreationAttributes
   extends Optional<IUserAttributes, "id"> {}
 
-//ToDo: need to find it's purpose
-// export interface Users {
-//   [key: string]: UnitUser;
-// }
+export interface UserCreationOptionalAttributes
+  extends Optional<
+    IUserCreationAttributes,
+    NullishPropertiesOf<IUserCreationAttributes>
+  > {}
+
+export type UserWhereOptionType = WhereOptions<IUserAttributes>;

@@ -1,5 +1,6 @@
 import { GoogleStrategy } from "@src/http/passportStrategies";
 import { successResponse } from "@src/http/responses/api.response";
+import { logger } from "@src/utils";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import passport from "passport";
@@ -20,6 +21,7 @@ class GoogleAuthController {
         ],
       })(request, response, next);
     } catch (error) {
+      logger.info("Error while logging in:", error);
       next(error);
     }
   };

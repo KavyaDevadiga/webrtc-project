@@ -13,8 +13,9 @@ export const googleAuthMiddleware = (
     (err: Error) => {
       if (err) {
         errorResponse(response, "Login is unsuccessful", err);
+      } else {
+        next();
       }
-      next();
     }
   );
 };

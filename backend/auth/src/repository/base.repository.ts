@@ -1,18 +1,25 @@
-import { Document, Model } from "mongoose";
+import { Model, ModelStatic, WhereOptions } from "sequelize";
+import { MakeNullishOptional } from "sequelize/types/utils";
 
-export class BaseRepository<T extends Document> {
-  private model: Model<T>;
+export class BaseRepository<
+  TAttributes extends {},
+  TCreationAttributes extends {}
+> {
+  private model: ModelStatic<Model<TAttributes, TCreationAttributes>>;
 
-  constructor(model: Model<T>) {
+  constructor(model: ModelStatic<Model<TAttributes, TCreationAttributes>>) {
     this.model = model;
   }
 
-  async get(): Promise<T[]> {
-    return this.model.find().exec();
+  async get(
+    options?: WhereOptions<TAttributes>
+  ): Promise<Model<TAttributes, TCreationAttributes>[]> {
+    return this.model.findAll({ where: options });
   }
 
-  async add(data: Partial<T>): Promise<T> {
-    const instance = new this.model(data);
-    return await instance.save();
+  async add(
+    data: MakeNullishOptional<TCreationAttributes>
+  ): Promise<Model<TAttributes, TCreationAttributes>> {
+    return this.model.create(data);
   }
 }
