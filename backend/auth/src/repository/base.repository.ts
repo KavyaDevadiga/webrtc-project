@@ -1,23 +1,32 @@
-import { Model, ModelStatic, WhereOptions } from "sequelize";
+import {
+  FindAttributeOptions,
+  Model,
+  ModelStatic,
+  WhereOptions,
+} from "sequelize";
 import { MakeNullishOptional } from "sequelize/types/utils";
 
 export class BaseRepository<
   TAttributes extends {},
   TCreationAttributes extends {}
 > {
-  private model: ModelStatic<Model<TAttributes, TCreationAttributes>>;
+  protected model: ModelStatic<Model<TAttributes, TCreationAttributes>>;
 
   constructor(model: ModelStatic<Model<TAttributes, TCreationAttributes>>) {
     this.model = model;
   }
 
   async get(
-    options?: WhereOptions<TAttributes>
+    options?: WhereOptions<TAttributes>,
+    attributes?: FindAttributeOptions
   ): Promise<Model<TAttributes, TCreationAttributes>[]> {
-    return this.model.findAll({ where: options });
+    return this.model.findAll({
+      where: options,
+      ...(attributes && { attributes }),
+    });
   }
 
-  async add(
+  async create(
     data: MakeNullishOptional<TCreationAttributes>
   ): Promise<Model<TAttributes, TCreationAttributes>> {
     return this.model.create(data);

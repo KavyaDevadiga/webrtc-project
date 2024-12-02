@@ -1,8 +1,6 @@
 import { userController } from "@src/http/controllers/v1";
 import { routeItemInterface } from "@src/interfaces";
 
-//To-Do: Move interfaces to separate folder
-
 const userRoutes: routeItemInterface.RouteItem[] = [
   // Dummy routes imported
   {

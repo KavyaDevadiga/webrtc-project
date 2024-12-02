@@ -20,7 +20,6 @@ class AppServer {
   public async start(): Promise<void> {
     try {
       const db = await PostgressConnection.getInstance();
-      logger.info("Database connected successfully.");
 
       initializeHttpServer(this.app);
 

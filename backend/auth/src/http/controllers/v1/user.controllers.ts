@@ -1,5 +1,6 @@
 import { successResponse } from "@src/http/responses/api.response";
 import { UserRepository } from "@src/repository";
+import { UserSerializer } from "@src/serializers";
 import { UserService } from "@src/services";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -30,5 +31,6 @@ class UserController {
   }
 }
 const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
+const userSerializer = new UserSerializer();
+const userService = new UserService(userRepository, userSerializer);
 export const userController = new UserController(userService);

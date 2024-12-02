@@ -1,7 +1,8 @@
 import { BaseError } from "@src/errors";
+import { errorResponse } from "@src/http/responses/api.response";
+import { logger } from "@src/utils";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { errorResponse } from "@src/http/responses/api.response";
 
 const errorHandler = (
   error: any,
@@ -18,7 +19,7 @@ const errorHandler = (
   } else {
     //Initial an email as it is unoperational
   }
-  console.error("Error:", error);
+  logger.error("Error:", error);
   errorResponse(response, message, error, statusCode);
 };
 

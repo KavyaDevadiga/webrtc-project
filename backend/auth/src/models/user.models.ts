@@ -1,5 +1,7 @@
 import { userInterface } from "@src/interfaces";
+import { GoogleKey } from "@src/models";
 import { DataTypes, Model, Sequelize } from "sequelize";
+
 export class User
   extends Model<
     userInterface.IUserAttributes,
@@ -13,6 +15,13 @@ export class User
   public googleId!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public createGoogleKey!: (
+    googleKey: Partial<userInterface.IGoogleKeysAttributes>
+  ) => Promise<any>;
+  static associate() {
+    User.hasMany(GoogleKey, { foreignKey: "userId" });
+  }
 }
 
 // Initialize the User model

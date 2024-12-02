@@ -27,9 +27,16 @@ export class PostgressConnection extends Database {
 
   private async initializeModels() {
     try {
-      initializeModel.forEach((model: (sequelize: Sequelize) => void) =>
-        model(this.sequelize!)
+      initializeModel.forEach(
+        (initializeModel: (sequelize: Sequelize) => void) =>
+          initializeModel(this.sequelize!)
       );
+
+      Object.values(this.sequelize!.models).forEach((model: any) => {
+        if (typeof model.associate === "function") {
+          model.associate();
+        }
+      });
       logger.info("Postgres models initialized successfully");
     } catch (error) {
       logger.error("Postgres models sync error:", error);

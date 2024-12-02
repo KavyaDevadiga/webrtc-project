@@ -19,7 +19,7 @@ export class Logger {
             format: winston.format.combine(
               winston.format.colorize(),
               winston.format.printf(({ level, message, timestamp }) => {
-                return `${level}: ${message}`;
+                return `${level}: ${JSON.stringify(message)}`;
               })
             ),
           }),
