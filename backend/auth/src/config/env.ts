@@ -16,6 +16,9 @@ export const DB_PASSWORD: string = process.env.DB_PASSWORD as string;
 export const DB_NAME: string = process.env.DB_NAME as string;
 export const POSTGRESS_URI: string = process.env.POSTGRESS_URI as string;
 
+//Redis Credentials
+export const REDIS_URI: string = process.env.REDIS_URI as string;
+
 //Google OAuth Credentials
 export const GOOGLE_OAUTH_CLIENT_ID: string =
   process.env.GOOGLE_OAUTH_CLIENT_ID ?? "";

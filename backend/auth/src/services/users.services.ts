@@ -4,13 +4,16 @@ import { User } from "@src/models";
 export class UserService {
   private userRepository: userInterface.IUserRepository;
   private UserSerializer: userInterface.IUserSerializer;
+  private TokenService: any;
 
   constructor(
     userRepository: userInterface.IUserRepository,
-    UserSerializer: userInterface.IUserSerializer
+    UserSerializer: userInterface.IUserSerializer,
+    TokenService: any = null
   ) {
     this.userRepository = userRepository;
     this.UserSerializer = UserSerializer;
+    this.TokenService = TokenService;
   }
 
   async getUsers(
@@ -69,5 +72,12 @@ export class UserService {
       await this.userRepository.addGoogleKeys(users[0], googleKeys[0]);
     }
     return;
+  }
+
+  async generateAndStoreToken(
+    payload: { userId: string },
+    expiresInHours = 7
+  ): Promise<string> {
+    return this.TokenService.generateAndStoreToken(payload, expiresInHours);
   }
 }

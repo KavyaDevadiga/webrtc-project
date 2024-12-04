@@ -1,5 +1,5 @@
 import { PORT } from "@src/config/env";
-import { PostgressConnection } from "@src/database";
+import { PostgressConnection, RedisConnection } from "@src/database";
 import { initializeHttpServer } from "@src/http";
 import { logger } from "@src/utils";
 import express, { Express } from "express";
@@ -20,6 +20,7 @@ class AppServer {
   public async start(): Promise<void> {
     try {
       const db = await PostgressConnection.getInstance();
+      const redis = await RedisConnection.getInstance();
 
       initializeHttpServer(this.app);
 
@@ -61,7 +62,8 @@ class AppServer {
     try {
       const db = await PostgressConnection.getInstance();
       await db.closeConnection();
-      logger.info("Database connection closed successfully.");
+      const redis = await RedisConnection.getInstance();
+      await redis.closeConnection();
     } catch (error) {
       logger.error("Error while closing database connection:", error);
     }

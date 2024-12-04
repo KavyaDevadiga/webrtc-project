@@ -2,7 +2,7 @@ import { successResponse } from "@src/http/responses/api.response";
 import { passportUserInterface } from "@src/interfaces";
 import { UserRepository } from "@src/repository";
 import { UserSerializer } from "@src/serializers";
-import { UserService } from "@src/services";
+import { TokenService, UserService } from "@src/services";
 import { isPassportUserInterface } from "@src/utils";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
@@ -63,7 +63,15 @@ class GoogleAuthController {
           },
         ]);
       }
-      successResponse(response, "Login Successful", user, StatusCodes.OK);
+      const token = await this.userService.generateAndStoreToken({
+        userId: user?.id as string,
+      });
+      successResponse(
+        response,
+        "Login Successful",
+        { ...user, token },
+        StatusCodes.OK
+      );
     } catch (error) {
       next(error);
     }
@@ -71,5 +79,10 @@ class GoogleAuthController {
 }
 const userRepository = new UserRepository();
 const userSerializer = new UserSerializer();
-const userService = new UserService(userRepository, userSerializer);
+const tokenService = new TokenService();
+const userService = new UserService(
+  userRepository,
+  userSerializer,
+  tokenService
+);
 export const googleAuthController = new GoogleAuthController(userService);
