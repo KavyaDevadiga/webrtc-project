@@ -1,15 +1,16 @@
 import { userInterface } from "@src/interfaces";
 import { User } from "@src/models";
+import { TokenService } from "@src/services";
 
 export class UserService {
   private userRepository: userInterface.IUserRepository;
   private UserSerializer: userInterface.IUserSerializer;
-  private TokenService: any;
+  private TokenService: TokenService;
 
   constructor(
     userRepository: userInterface.IUserRepository,
     UserSerializer: userInterface.IUserSerializer,
-    TokenService: any = null
+    TokenService: TokenService
   ) {
     this.userRepository = userRepository;
     this.UserSerializer = UserSerializer;
