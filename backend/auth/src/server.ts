@@ -1,8 +1,9 @@
-import { PORT } from "@src/config/env";
 import { PostgressConnection, RedisConnection } from "@src/database";
+import express, { Express } from "express";
+
+import { PORT } from "@src/config/env";
 import { initializeHttpServer } from "@src/http";
 import { logger } from "@src/utils";
-import express, { Express } from "express";
 
 class AppServer {
   private app: Express;

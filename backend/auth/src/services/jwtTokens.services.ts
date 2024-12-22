@@ -54,4 +54,16 @@ export class TokenService {
   public generateRefreshToken(payload: object, expiresIn = "70d"): string {
     return this.generateToken(payload, expiresIn);
   }
+
+  //To-Do: Implement logout functionality and revoke token
+  public async revokeToken(userId: string): Promise<void> {
+    try {
+      const deleted = await this.redisClient.del(`auth_token:${userId}`);
+      if (deleted === 0) {
+        throw new Error("Token not found or already revoked.");
+      }
+    } catch (error) {
+      throw new Error(`Error revoking token: ${error}`);
+    }
+  }
 }

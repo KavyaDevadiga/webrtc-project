@@ -5,7 +5,7 @@ import { routeItemInterface } from "@src/interfaces";
 const authRoutes: routeItemInterface.RouteItem[] = [
   {
     method: "get",
-    path: "/google/login",
+    path: "/auth/google/login",
     handler: googleAuthController.googleLogin,
     middlewares: [],
   },
