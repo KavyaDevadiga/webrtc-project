@@ -1,13 +1,14 @@
-import { REDIS_URI } from "@src/config/env";
-import { Database } from "@src/database";
-import { logger } from "@src/utils";
 import {
-  createClient,
   RedisClientType,
   RedisFunctions,
   RedisModules,
   RedisScripts,
+  createClient,
 } from "redis";
+
+import { REDIS_URI } from "@src/config/env";
+import { Database } from "@src/database";
+import { logger } from "@src/utils";
 
 export class RedisConnection extends Database {
   private redisClient: RedisClientType<
@@ -52,10 +53,7 @@ export class RedisConnection extends Database {
     RedisModules,
     RedisFunctions,
     RedisScripts
-  > {
-    if (!this.redisClient) {
-      throw new Error("Redis client is not connected");
-    }
+  > | null {
     return this.redisClient;
   }
 }

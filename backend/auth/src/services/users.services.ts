@@ -1,16 +1,17 @@
 import { userInterface } from "@src/interfaces";
 import { User } from "@src/models";
 import { TokenService } from "@src/services";
+import { TimeConversionUtils } from "@src/utils";
 
 export class UserService {
   private userRepository: userInterface.IUserRepository;
   private UserSerializer: userInterface.IUserSerializer;
-  private TokenService: TokenService;
+  private TokenService: TokenService | null;
 
   constructor(
     userRepository: userInterface.IUserRepository,
     UserSerializer: userInterface.IUserSerializer,
-    TokenService: TokenService
+    TokenService: TokenService | null = null
   ) {
     this.userRepository = userRepository;
     this.UserSerializer = UserSerializer;
@@ -77,8 +78,10 @@ export class UserService {
 
   async generateAndStoreToken(
     payload: { userId: string },
-    expiresInHours = 7
+    expiresInHours = TimeConversionUtils.daysToHours(7)
   ): Promise<string> {
-    return this.TokenService.generateAndStoreToken(payload, expiresInHours);
+    return this.TokenService
+      ? this.TokenService.generateAndStoreToken(payload, expiresInHours)
+      : "";
   }
 }
