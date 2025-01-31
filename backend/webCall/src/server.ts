@@ -1,12 +1,10 @@
 import { PostgressConnection, RedisConnection } from "@src/database";
-import express, { Express } from "express";
 
 import { PORT } from "@src/config/env";
-import { initializeHttpServer } from "@src/http";
+import { startSocketServer } from "@src/sockets";
 import { logger } from "@src/utils";
 
 class AppServer {
-  private app: Express;
   private port: number;
 
   constructor() {
@@ -15,7 +13,6 @@ class AppServer {
       process.exit(1);
     }
     this.port = PORT;
-    this.app = express();
   }
 
   public async start(): Promise<void> {
@@ -23,11 +20,15 @@ class AppServer {
       const db = await PostgressConnection.getInstance();
       const redis = await RedisConnection.getInstance();
 
-      initializeHttpServer(this.app);
+      //not sure whether http server would be usefull
+      // initializeHttpServer(this.app);
 
-      this.app.listen(this.port, () => {
-        logger.info(`Server is listening on port ${this.port}`);
-      });
+      // this.app.listen(this.port, () => {
+      //   logger.info(`Server is listening on port ${this.port}`);
+      // });
+
+      //initiate socket server
+      startSocketServer(this.port);
 
       this.setupGracefulShutdown();
     } catch (error) {
