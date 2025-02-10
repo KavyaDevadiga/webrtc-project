@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 
+import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import { useUserData } from "../../context/CurrentUserProvider";
 import { useSocket } from "../../context/SocketProvider";
+import { AUTH_URL } from "../../env";
 import { isValidEmail } from "../../utils/util";
 
 const Landing = () => {
@@ -14,17 +16,19 @@ const Landing = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (userData && userData.currentEmail) {
-      setUser(userData);
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const user = JSON.parse(userData);
+      if (user && user.email) {
+        setUser({
+          currentEmail: user.email,
+        });
+        socket.emit("user:register", { currentEmail: user.email });
+        navigate("/call");
+      }
     }
   }, []);
 
-  useEffect(() => {
-    if (user && user.currentEmail) {
-      localStorage.setItem("user", JSON.stringify(user));
-    }
-  }, [user]);
   const handleUserRegistered = useCallback((data) => {
     const { currentEmail } = data;
     setUser({ currentEmail });
@@ -51,6 +55,27 @@ const Landing = () => {
     setCurrentEmail(e.target.value);
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const userId = params.get("userId");
+    const name = params.get("name");
+    const email = params.get("email");
+
+    if (token) {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ token, userId, name, email })
+      );
+      setCurrentEmail(email);
+      socket.emit("user:register", { currentEmail: email });
+    }
+  }, [navigate, location]);
+
+  const handleLogin = () => {
+    window.location.href = `${AUTH_URL}/api/v1/auth/google/login`;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-400 via-purple-300 to-pink-200 p-4">
       <div className="text-center mb-10">
@@ -61,36 +86,21 @@ const Landing = () => {
           Let's connect and collaborate with ease
         </p>
       </div>
-      <div className="mb-8 w-full max-w-md">
+      <div className="mb-8 w-full max-w-md text-center">
         <label
-          htmlFor="currentEmail"
+          htmlFor="googleLogin"
           className="block text-sm font-semibold text-gray-700 mb-3"
         >
-          Enter Your Email
+          Sign in with Google
         </label>
-        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
-          <input
-            id="currentEmail"
-            type="email"
-            value={currentEmail}
-            onChange={handleEmailChange}
-            className="px-4 py-3 outline-none w-full text-gray-700 focus:ring-0"
-            placeholder="example@example.com"
-          />
-          <button
-            className={`bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 
-    ${
-      !isValidEmail(currentEmail)
-        ? "bg-gray-400 cursor-not-allowed"
-        : "hover:bg-green-700"
-    }`}
-            disabled={!isValidEmail(currentEmail)}
-            onClick={registerUser}
-          >
-            Submit
-          </button>
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        <button
+          id="googleLogin"
+          className="flex items-center justify-center w-full gap-3 border border-gray-300 rounded-lg bg-white py-3 px-6 font-semibold shadow-md transition-all duration-300 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500"
+          onClick={handleLogin}
+        >
+          <FcGoogle size={24} />
+          <span className="text-gray-700">Continue with Google</span>
+        </button>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
-import { successResponse } from "@src/http/responses/api.response";
+import { TokenService, UserService } from "@src/services";
+import { NextFunction, Request, Response } from "express";
+
+import { CLIENT_HOST } from "@src/config/env";
 import { passportUserInterface } from "@src/interfaces";
 import { UserRepository } from "@src/repository";
 import { UserSerializer } from "@src/serializers";
-import { TokenService, UserService } from "@src/services";
 import { isPassportUserInterface } from "@src/utils";
-import { NextFunction, Request, Response } from "express";
-import { StatusCodes } from "http-status-codes";
 import passport from "passport";
 
 class GoogleAuthController {
@@ -37,10 +37,19 @@ class GoogleAuthController {
     next: NextFunction
   ): Promise<void> => {
     try {
+      console.log("-------", request);
       if (!isPassportUserInterface(request))
         throw new Error("Google user not found");
       let { profile, googleAccessToken, googleRefreshToken } = request.user;
-      let user = await this.userService.getUserByGoogleId(profile.id);
+      let user = await this.userService.getUserByGoogleId(profile.id, [
+        "id",
+        "name",
+        "email",
+        "googleId",
+      ]);
+      console.log(user);
+      console.log(profile.id);
+
       if (!user) {
         user = await this.userService.addUser(
           {
@@ -66,11 +75,9 @@ class GoogleAuthController {
       const token = await this.userService.generateAndStoreToken({
         userId: user?.id as string,
       });
-      successResponse(
-        response,
-        "Login Successful",
-        { ...user, token },
-        StatusCodes.OK
+      console.log(user);
+      return response.redirect(
+        `${CLIENT_HOST}/landing?token=${token}&userId=${user?.id}&name=${user?.name}&email=${user?.email}`
       );
     } catch (error) {
       next(error);

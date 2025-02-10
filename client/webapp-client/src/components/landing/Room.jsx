@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import ReactPlayer from "react-player";
 import { useRemoteSocket } from "../../context/RemoteSocketProvider";
@@ -13,30 +13,47 @@ const Room = () => {
   const [myStream, setMyStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
 
-  const myStreamRef = useRef(null);
+  // ####################################################################################################################
 
-  // Initialize local media stream
-  const initializeMediaStream = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      });
-      setMyStream(stream);
-      myStreamRef.current = stream;
+  const handleNegotiationNeeded = useCallback(async () => {
+    console.log("--------------NEGO-NEEDED");
+    const offer = await peer.getOffer();
+    socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+  }, [remoteSocketId]);
 
-      myStream.getTracks().forEach((track) => {
-        peer.peer.addTrack(track, stream);
-      });
-    } catch (error) {
-      console.error("Error accessing media devices:", error);
+  const handleIceCandidate = useCallback(
+    async (event) => {
+      console.log("ICE-CANDIDATE--------------");
+      if (event.candidate) {
+        console.log("ICE-REQUESTED-------------");
+        // signalingChannel.send({ "new-ice-candidate": event.candidate });
+        socket.emit("new:ice-candidate", {
+          candidate: event.candidate,
+          to: remoteSocketId,
+        });
+      }
+    },
+    [remoteSocketId]
+  );
+  useEffect(() => {
+    if (peer?.peer?.currentLocalDescription?.type == "offer") {
+      peer.peer.addEventListener("negotiationneeded", handleNegotiationNeeded);
     }
-  }, [myStream, peer]);
 
-  // Handle incoming negotiation offer
+    return () => {
+      peer.peer.removeEventListener(
+        "negotiationneeded",
+        handleNegotiationNeeded
+      );
+    };
+  }, []);
+
+  // ####################################################################################################################
+
   const handleNegotiationIncoming = useCallback(
     async ({ from, offer }) => {
       try {
+        console.log("-------------------------NEGO-RECEIVED");
         const answer = await peer.answerCall(offer);
         socket.emit("peer:nego:done", { to: from, ans: answer });
       } catch (error) {
@@ -45,59 +62,19 @@ const Room = () => {
     },
     [peer, socket]
   );
-
-  // Handle negotiation finalization
-  const handleNegotiationFinal = useCallback(
-    async ({ ans }) => {
-      try {
-        await peer.setLocalDescription(ans);
-      } catch (error) {
-        console.error("Error setting local description:", error);
-      }
-    },
-    [peer]
-  );
-
-  // Trigger negotiation when needed
-  const handleNegotiationNeeded = useCallback(async () => {
-    console.log("remoteSocket--------------", remoteSocketId);
-    if (!remoteSocketId) return;
+  const handleNegotiationFinal = useCallback(async ({ ans }) => {
     try {
-      const offer = await peer.getOffer();
-      socket.emit("peer:nego:needed", { offer, to: remoteSocketId });
+      console.log("------------NEGOTIATION-FINAL");
+      await peer.setLocalDescription(ans);
     } catch (error) {
-      console.error("Error creating offer:", error);
+      console.error("Error setting local description:", error);
     }
-  }, [peer, remoteSocketId, socket]);
+  }, []);
 
-  // Handle track events for remote stream
-  useEffect(() => {
-    const handleTrackEvent = (event) => {
-      setRemoteStream(event.streams[0]);
-    };
-
-    peer.peer.addEventListener("track", handleTrackEvent);
-    return () => {
-      peer.peer.removeEventListener("track", handleTrackEvent);
-    };
-  }, [peer]);
-
-  // Attach negotiationneeded event listener
-  useEffect(() => {
-    console.log("--------------", peer);
-    peer.peer.addEventListener("negotiationneeded", handleNegotiationNeeded);
-    return () => {
-      peer.peer.removeEventListener(
-        "negotiationneeded",
-        handleNegotiationNeeded
-      );
-    };
-  }, [handleNegotiationNeeded, peer]);
-
-  // Set up socket event listeners
   useEffect(() => {
     socket.on("peer:nego:needed", handleNegotiationIncoming);
     socket.on("peer:nego:final", handleNegotiationFinal);
+    socket.on("new:ice-candidate", handlenewIceCandidate);
 
     return () => {
       socket.off("peer:nego:needed", handleNegotiationIncoming);
@@ -105,10 +82,86 @@ const Room = () => {
     };
   }, [socket, handleNegotiationIncoming, handleNegotiationFinal]);
 
-  // Initialize media stream on component mount
+  // ####################################################################################################################
+
+  const initializeMediaStream = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+        video: {
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          frameRate: { max: 24 },
+        },
+      });
+      setMyStream(stream);
+
+      stream.getTracks().forEach((track) => {
+        peer.peer.addTrack(track, stream);
+        if (track.kind === "video") {
+          peer.setBandwidthConstraints(track);
+        }
+      });
+    } catch (error) {
+      console.error("Error accessing media devices:", error);
+    }
+  }, [peer]);
+
   useEffect(() => {
     initializeMediaStream();
-  }, [initializeMediaStream]);
+  }, [initializeMediaStream, myStream]);
+
+  // ####################################################################################################################
+  const handlenewIceCandidate = useCallback(async ({ candidate }) => {
+    try {
+      await peer.peer.addIceCandidate(candidate);
+    } catch (error) {
+      console.error("Error adding ICE candidate:", error);
+    }
+  }, []);
+
+  const handleTracks = useCallback(async (ev) => {
+    const remoteStream = ev.streams;
+    console.log("GOT TRACKS!!");
+    setRemoteStream(remoteStream[0]);
+  }, []);
+  useEffect(() => {
+    peer.peer.addEventListener("track", handleTracks);
+
+    peer.peer.addEventListener("icecandidate", handleIceCandidate);
+
+    return () => {
+      peer.peer.removeEventListener("track", handleTracks);
+      peer.peer.removeEventListener("icecandidate", handleIceCandidate);
+    };
+  }, []);
+
+  // ####################################################################################################################
+
+  useEffect(() => {
+    const handleConnectionStateChange = () => {
+      if (peer.peer.connectionState === "connected") {
+        peer.setupQualityMonitoring();
+      }
+    };
+
+    if (peer?.peer) {
+      peer.peer.addEventListener(
+        "connectionstatechange",
+        handleConnectionStateChange
+      );
+      return () => {
+        peer.peer.removeEventListener(
+          "connectionstatechange",
+          handleConnectionStateChange
+        );
+      };
+    }
+  }, [peer]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 text-gray-800">
@@ -126,8 +179,8 @@ const Room = () => {
                 playing
                 muted
                 url={myStream}
-                width="100%"
-                height="100%"
+                width="50%"
+                height="50%"
                 className="rounded-lg"
               />
             </div>
@@ -140,8 +193,8 @@ const Room = () => {
               <ReactPlayer
                 playing
                 url={remoteStream}
-                width="100%"
-                height="100%"
+                width="50%"
+                height="50%"
                 className="rounded-lg"
               />
             </div>

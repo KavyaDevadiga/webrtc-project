@@ -20,14 +20,9 @@ export class UserService {
 
   async getUsers(
     options: userInterface.UserWhereOptionType = {},
-    attributes?: string[]
+    attributes: string[] = ["id"]
   ): Promise<userInterface.IUserAttributes[]> {
-    const users = await this.userRepository.get(options, [
-      "id",
-      "name",
-      "email",
-      "googleId",
-    ]);
+    const users = await this.userRepository.get(options, attributes);
     return users.length > 0
       ? this.UserSerializer.toUserLIst(users as User[])
       : [];
@@ -35,14 +30,12 @@ export class UserService {
 
   async getUserByGoogleId(
     profileId: string,
-    attributes?: string[]
+    attributes: string[] = ["id"]
   ): Promise<userInterface.IUserAttributes | null> {
-    const users = await this.userRepository.get({ googleId: profileId }, [
-      "id",
-    ]);
-    if (!users || users.length === 0) {
-      throw new Error("User not found");
-    }
+    const users = await this.userRepository.get(
+      { googleId: profileId },
+      attributes
+    );
     return users[0]
       ? this.UserSerializer.toUserDetails(users[0] as User)
       : null;

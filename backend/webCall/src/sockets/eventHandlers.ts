@@ -29,11 +29,9 @@ export class EventHandler {
 
     // Add more event handlers as needed
     socket.on("join:request", (data) => {
-      console.log("-----------", data);
       const { email, room, from, offer } = data;
       socket.join([room]);
       const receiverId = emailToSocketmap.get(email);
-      console.log("----------", emailToSocketmap);
 
       if (receiverId) {
         socket.to(receiverId).emit("join:requested", {
@@ -44,18 +42,14 @@ export class EventHandler {
           remoteSocket: socket.id,
         });
       }
-      // socket.emit("room:joined", data);
     });
 
     socket.on("join:accept", (data) => {
-      console.log("join:accept", data);
       const { to, ans } = data;
-      console.log("-----------", data);
       socket.to(to).emit("join:accepted", { ans, from: socket.id });
     });
 
     socket.on("user:call", ({ to, offer }) => {
-      console.log("user:call", to, offer);
       socket.to(to).emit("incoming:call", { offer, from: socket.id });
     });
 
@@ -69,6 +63,10 @@ export class EventHandler {
 
     socket.on("peer:nego:done", ({ to, ans }) => {
       socket.to(to).emit("peer:nego:final", { ans, from: socket.id });
+    });
+
+    socket.on("new:ice-candidate", ({ candidate, to }) => {
+      socket.to(to).emit("new:ice-candidate", { candidate, from: socket.id });
     });
   }
 }

@@ -1,5 +1,7 @@
-import { errorResponse } from "@src/http/responses/api.response";
 import { NextFunction, Request, Response } from "express";
+
+import { CLIENT_HOST } from "@src/config/env";
+import { errorResponse } from "@src/http/responses/api.response";
 import passport from "passport";
 
 export const googleAuthMiddleware = (
@@ -7,15 +9,14 @@ export const googleAuthMiddleware = (
   response: Response,
   next: NextFunction
 ) => {
-  passport.authenticate("google", { failureRedirect: "/home", session: false })(
-    request,
-    response,
-    (err: Error) => {
-      if (err) {
-        errorResponse(response, "Login is unsuccessful", err);
-      } else {
-        next();
-      }
+  passport.authenticate("google", {
+    failureRedirect: `${CLIENT_HOST}/landing`,
+    session: false,
+  })(request, response, (err: Error) => {
+    if (err) {
+      errorResponse(response, "Login is unsuccessful", err);
+    } else {
+      next();
     }
-  );
+  });
 };

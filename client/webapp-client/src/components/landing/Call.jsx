@@ -55,7 +55,6 @@ const Call = () => {
 
   const handleJoinRequest = useCallback(
     ({ from, requestedRoom, offer, remoteSocket }) => {
-      console.log("----------", callingRef.current);
       if (!callingRef.current) {
         remoteSocketIdRef.current = remoteSocket;
         remoteOfferRef.current = offer;
@@ -91,62 +90,6 @@ const Call = () => {
     setRtcConn(peer);
     navigate(`/room/${requestedRoomRef.current}`);
   }, [navigate, setRtcConn, socket]);
-
-  // const handleNegotiationIncoming = useCallback(
-  //   async ({ from, offer }) => {
-  //     try {
-  //       console.log("Negotiation incoming", offer);
-  //       const answer = await peer.answerCall(offer);
-  //       socket.emit("peer:nego:done", { to: from, ans: answer });
-  //     } catch (error) {
-  //       console.error("Error during negotiation:", error);
-  //     }
-  //   },
-  //   [peer, socket]
-  // );
-
-  // const handleNegotiationFinal = useCallback(
-  //   async ({ ans }) => {
-  //     try {
-  //       await peer.setLocalDescription(ans);
-  //     } catch (error) {
-  //       console.error("Error setting local description:", error);
-  //     }
-  //   },
-  //   [peer]
-  // );
-
-  // const handleNegotiationNeeded = useCallback(async () => {
-  //   if (!remoteSocketIdRef.current) return;
-  //   try {
-  //     const offer = await peer.getOffer();
-  //     socket.emit("peer:nego:needed", {
-  //       offer,
-  //       to: remoteSocketIdRef.current,
-  //     });
-  //   } catch (error) {
-  //     console.error("Error creating offer:", error);
-  //   }
-  // }, [peer, remoteSocketIdRef.current, socket]);
-  // useEffect(() => {
-  //   peer.peer.addEventListener("negotiationneeded", handleNegotiationNeeded);
-  //   return () => {
-  //     peer.peer.removeEventListener(
-  //       "negotiationneeded",
-  //       handleNegotiationNeeded
-  //     );
-  //   };
-  // }, [peer, handleNegotiationNeeded]);
-
-  // useEffect(() => {
-  //   socket.on("peer:nego:needed", handleNegotiationIncoming);
-  //   socket.on("peer:nego:final", handleNegotiationFinal);
-
-  //   return () => {
-  //     socket.off("peer:nego:needed", handleNegotiationIncoming);
-  //     socket.off("peer:nego:final", handleNegotiationFinal);
-  //   };
-  // }, [socket, handleNegotiationIncoming, handleNegotiationFinal]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-400 via-purple-300 to-pink-200 p-4">
